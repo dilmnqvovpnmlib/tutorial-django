@@ -1,6 +1,31 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
+
+from .models import *
+
+"""
+質問 "インデックス" ページ -- 最新の質問をいくつか表示
+質問 "詳細" ページ -- 結果を表示せず、質問テキストと投票フォームを表示
+質問 "結果" ページ -- 特定の質問の結果を表示
+投票ページ -- 特定の質問の選択を投票として受付
+"""
 
 
 def index(request):
-    return HttpResponse('Hello')
+    latest_questions = Question.objects.order_by('-pub_date')[:5]
+    context = {'latest_questions': latest_questions}
+    return render(request, 'polls/index.html', context)
+
+
+def detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    context = {'question': question}
+    return render(request, 'polls/detail.html', context)
+
+
+def results(request, question_id):
+    return HttpResponse('You are looking at the results of {}'.format(question_id))
+
+
+def vote(request, question_id):
+    return HttpResponse('You are voting on question {}'.format(question_id))
